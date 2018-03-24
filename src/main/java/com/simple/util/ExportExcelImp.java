@@ -35,7 +35,7 @@ public class ExportExcelImp implements ExportExcel{
 
 
     public String[] exportMapExcel(String sheetName, String tableHeadName, List<String> titleList, Map<String,String> titleMapper,
-                                   List<Map<String,Object>> contentList, String fileName, int columWidth) throws IOException {
+                                   List<Map<String,Object>> contentList, String fileName, int columWidth,int tableHeadRow) throws IOException {
         /**
          * sheetName sheet名称
          * tableHeadName 表名
@@ -50,32 +50,33 @@ public class ExportExcelImp implements ExportExcel{
             HSSFWorkbook wb = new HSSFWorkbook();
             //建立新的sheet对象（excel的表单）
             HSSFSheet sheet = wb.createSheet(sheetName);
+            if(tableHeadRow==1) {
+                //在sheet里创建第一行，参数为行索引(excel的行)，可以是0～65535之间的任何一个
+                HSSFRow row1 = sheet.createRow(0);
+                //创建单元格（excel的单元格，参数为列索引，可以是0～255之间的任何一个
+                HSSFCell cell = row1.createCell(0);
 
-            //在sheet里创建第一行，参数为行索引(excel的行)，可以是0～65535之间的任何一个
-            HSSFRow row1 = sheet.createRow(0);
-            //创建单元格（excel的单元格，参数为列索引，可以是0～255之间的任何一个
-            HSSFCell cell = row1.createCell(0);
-
-            //设置单元格内容
-            cell.setCellValue(tableHeadName);
-            cell.getRow().setHeightInPoints(30.2f);
-            HSSFCellStyle style = wb.createCellStyle();
-            style.setAlignment(HSSFCellStyle.ALIGN_CENTER);//水平居中
-            style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//垂直居中
-            HSSFFont font = wb.createFont();
-            font.setFontHeightInPoints((short) 15);
-            font.setColor(HSSFColor.BLACK.index);
-            font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-            font.setFontName("宋体");
-            // 把字体 应用到当前样式
-            style.setFont(font);
-            cell.setCellStyle(style);
-            //创建空白行
-            sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, titleList.size() - 1));
-            //创建表名行
+                //设置单元格表头
+                cell.setCellValue(tableHeadName);
+                cell.getRow().setHeightInPoints(30.2f);
+                HSSFCellStyle style = wb.createCellStyle();
+                style.setAlignment(HSSFCellStyle.ALIGN_CENTER);//水平居中
+                style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//垂直居中
+                HSSFFont font = wb.createFont();
+                font.setFontHeightInPoints((short) 15);
+                font.setColor(HSSFColor.BLACK.index);
+                font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+                font.setFontName("宋体");
+                // 把字体 应用到当前样式
+                style.setFont(font);
+                cell.setCellStyle(style);
+                //创建空白行
+                sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, titleList.size() - 1));
+                //创建表名行
+            }
 
             //设置标题行
-            HSSFRow row2 = sheet.createRow(1);
+            HSSFRow row2 = sheet.createRow(tableHeadRow);
             for (int i = 0; i < titleList.size(); i++) {
                 row2.createCell(i).setCellValue(titleList.get(i));
                 sheet.setColumnWidth(i, WIDTH_PARAM * columWidth + WIDTH_PARAM_ADD);
@@ -84,14 +85,14 @@ public class ExportExcelImp implements ExportExcel{
             if(wbNum==wbs){
                 for (int j = wbNum * MAX_ROW_NUM; j < contentList.size(); j++) {
 //                    int rowNum = j -( wbNum * MAX_ROW_NUM) + 2;
-                    HSSFRow row3 = sheet.createRow(j -( wbNum * MAX_ROW_NUM) + 2);
+                    HSSFRow row3 = sheet.createRow(j -( wbNum * MAX_ROW_NUM) + 1+tableHeadRow);
                     for (int p = 0; p < titleList.size(); p++) {
                         row3.createCell(p).setCellValue(contentList.get(j).get(titleMapper.get(titleList.get(p))) + "");
                     }
                 }
             }else {
                 for (int j = 0; j < MAX_ROW_NUM; j++) {
-                    HSSFRow row3 = sheet.createRow(j + 2);
+                    HSSFRow row3 = sheet.createRow(j + 2+tableHeadRow);
                     for (int p = 0; p < titleList.size(); p++) {
                         row3.createCell(p).setCellValue(contentList.get(j + wbNum * MAX_ROW_NUM).get(titleMapper.get(titleList.get(p))) + "");
                     }
@@ -113,43 +114,41 @@ public class ExportExcelImp implements ExportExcel{
     }
 
     public String[] exportTo2007(String sheetName, String tableHeadName, List<String> titleList, Map<String,String> titleMapper,
-                               List<Map<String,Object>> contentList, String fileName, int columWidth) throws IOException {
+                               List<Map<String,Object>> contentList, String fileName, int columWidth,int tableHeadRow) throws IOException {
         SXSSFWorkbook sb = new SXSSFWorkbook();
         //建立新的sheet对象（excel的表单）
         Sheet sheet = sb.createSheet(sheetName);
-
-        //在sheet里创建第一行，参数为行索引(excel的行)，可以是0～65535之间的任何一个
-        Row row1 = sheet.createRow(0);
-        //创建单元格（excel的单元格，参数为列索引，可以是0～255之间的任何一个
-        Cell cell = row1.createCell(0);
-
-        //设置单元格内容
-        cell.setCellValue(tableHeadName);
-        cell.getRow().setHeightInPoints(30.2f);
-        CellStyle style = sb.createCellStyle();
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);//水平居中
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//垂直居中
-        Font font = sb.createFont();
-        font.setFontHeightInPoints((short) 15);
-        font.setColor(HSSFColor.BLACK.index);
-        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-        font.setFontName("宋体");
-        // 把字体 应用到当前样式
-        style.setFont(font);
-        cell.setCellStyle(style);
-        //创建空白行
-        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, titleList.size() - 1));
-        //创建表名行
+        if(tableHeadRow==1) {
+            Row row1 = sheet.createRow(0);
+            Cell cell = row1.createCell(0);
+            //设置单元格内容
+            cell.setCellValue(tableHeadName);
+            cell.getRow().setHeightInPoints(30.2f);
+            CellStyle style = sb.createCellStyle();
+            style.setAlignment(HSSFCellStyle.ALIGN_CENTER);//水平居中
+            style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//垂直居中
+            Font font = sb.createFont();
+            font.setFontHeightInPoints((short) 15);
+            font.setColor(HSSFColor.BLACK.index);
+            font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+            font.setFontName("宋体");
+            // 把字体 应用到当前样式
+            style.setFont(font);
+            cell.setCellStyle(style);
+            //创建空白行
+            sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, titleList.size() - 1));
+            //创建表名行
+        }
 
         //设置标题行
-        Row row2 = sheet.createRow(1);
+        Row row2 = sheet.createRow(tableHeadRow);
         for (int i = 0; i < titleList.size(); i++) {
             row2.createCell(i).setCellValue(titleList.get(i));
             sheet.setColumnWidth(i, WIDTH_PARAM * columWidth + WIDTH_PARAM_ADD);
         }
         //设置数据行
         for (int j = 0; j < contentList.size(); j++) {
-            Row row3 = sheet.createRow(j + 2);
+            Row row3 = sheet.createRow(j + 1 +tableHeadRow);
             for (int p = 0; p < titleList.size(); p++) {
                 row3.createCell(p).setCellValue(contentList.get(j).get(titleMapper.get(titleList.get(p))) + "");
             }
@@ -162,25 +161,39 @@ public class ExportExcelImp implements ExportExcel{
         fileNames[0] = fileName+".xlsx";
         return fileNames;
     }
-    public String[] exportMapExcel(List<Map<String,Object>> contentList,Class clazz) throws IOException, NoExcelEntryAnnotationsException, AnnotationsColumReuseException {
+    public String[] exportMapExcel(List<Map<String,Object>> contentList,Class clazz)
+            throws IOException, NoExcelEntryAnnotationsException, AnnotationsColumReuseException {
         String fileName = new Date().getTime()+"";
         return exportMapExcel(contentList,clazz,fileName);
 
     }
 
-    public String[] exportMapExcel(List<Map<String,Object>> contentList,Class clazz,String fileName) throws IOException, NoExcelEntryAnnotationsException, AnnotationsColumReuseException {
+    public String[] exportMapExcel(List<Map<String,Object>> contentList,Class clazz,String fileName)
+            throws IOException, NoExcelEntryAnnotationsException, AnnotationsColumReuseException {
         return exportMapExcel(contentList,clazz,fileName,DEFALUT_SHEET_NAME);
     }
 
-    public String[] exportMapExcel(List<Map<String,Object>> contentList,Class clazz,String fileName,String sheetName) throws IOException, NoExcelEntryAnnotationsException, AnnotationsColumReuseException {
+    public String[] exportMapExcel(List<Map<String,Object>> contentList,Class clazz,String fileName,String sheetName)
+            throws IOException, NoExcelEntryAnnotationsException, AnnotationsColumReuseException {
         return exportMapExcel(contentList,clazz,fileName,sheetName,DEFALUT_TABLE_NAME);
     }
 
-    public String[] exportMapExcel(List<Map<String,Object>> contentList,Class clazz,String fileName,String sheetName,String tableName) throws IOException, NoExcelEntryAnnotationsException, AnnotationsColumReuseException {
+    public String[] exportMapExcel(List<Map<String,Object>> contentList,Class clazz,String fileName,String sheetName,String tableName)
+            throws IOException, NoExcelEntryAnnotationsException, AnnotationsColumReuseException {
         return exportMapExcel(contentList,clazz,fileName,sheetName,tableName,DEFALUT_WIDTH);
     }
+    public String[] exportMapExcel(List<Map<String,Object>> contentList,Class clazz,String fileName,String sheetName,String tableName,int width)
+            throws IOException, NoExcelEntryAnnotationsException, AnnotationsColumReuseException {
+        if(tableName.equals(DEFALUT_TABLE_NAME)){
+            return exportMapExcel(contentList,clazz,fileName,sheetName,tableName,width,NO_TABLE_HEAD);
+        }else{
+            return exportMapExcel(contentList,clazz,fileName,sheetName,tableName,width,WITH_TABLE_HEAD);
+        }
 
-    public String[] exportMapExcel(List<Map<String,Object>> contentList,Class clazz,String fileName,String sheetName,String tableName,int width) throws IOException, NoExcelEntryAnnotationsException, AnnotationsColumReuseException {
+    }
+
+    public String[] exportMapExcel(List<Map<String,Object>> contentList,Class clazz,String fileName,String sheetName,String tableName,int width,int tableHeadRow)
+            throws IOException, NoExcelEntryAnnotationsException, AnnotationsColumReuseException {
         Map<Integer,String> titleMapper = new HashMap<Integer,String>();
         Map<String,String> mapper = new HashMap<String, String>();
         List tiTleList = new ArrayList();
@@ -207,9 +220,9 @@ public class ExportExcelImp implements ExportExcel{
             tiTleList.add(i,titleMapper.get(i));
         }
         if(excelType==EXCEL_2003) {
-            return exportMapExcel(sheetName, tableName, tiTleList, mapper, contentList, fileName, width);
+            return exportMapExcel(sheetName, tableName, tiTleList, mapper, contentList, fileName, width,tableHeadRow);
         }else{
-            return exportTo2007(sheetName, tableName, tiTleList, mapper, contentList, fileName, width);
+            return exportTo2007(sheetName, tableName, tiTleList, mapper, contentList, fileName, width,tableHeadRow);
         }
     }
 
@@ -218,24 +231,38 @@ public class ExportExcelImp implements ExportExcel{
      * return fileName
      *
      */
-    public String[] exportClassExcel(List<Object> list) throws NoExcelEntryAnnotationsException, AnnotationsColumReuseException, IOException {
+    public String[] exportClassExcel(List<Object> list)
+            throws NoExcelEntryAnnotationsException, AnnotationsColumReuseException, IOException {
         String fileName = new Date().getTime()+"";
         return  exportClassExcel(list,fileName);
     }
 
-    public String[] exportClassExcel(List<Object> list,String fileName) throws NoExcelEntryAnnotationsException, AnnotationsColumReuseException, IOException {
+    public String[] exportClassExcel(List<Object> list,String fileName)
+            throws NoExcelEntryAnnotationsException, AnnotationsColumReuseException, IOException {
         return exportClassExcel(list,fileName,DEFALUT_SHEET_NAME);
     }
 
-    public String[] exportClassExcel(List<Object> list,String fileName,String sheetName) throws NoExcelEntryAnnotationsException, AnnotationsColumReuseException, IOException {
+    public String[] exportClassExcel(List<Object> list,String fileName,String sheetName)
+            throws NoExcelEntryAnnotationsException, AnnotationsColumReuseException, IOException {
         return exportClassExcel(list,fileName,sheetName,DEFALUT_TABLE_NAME);
     }
 
-    public String[] exportClassExcel(List<Object> list,String fileName,String sheetName,String tableName) throws NoExcelEntryAnnotationsException, AnnotationsColumReuseException, IOException {
+    public String[] exportClassExcel(List<Object> list,String fileName,String sheetName,String tableName)
+            throws NoExcelEntryAnnotationsException, AnnotationsColumReuseException, IOException {
         return exportClassExcel(list,fileName,sheetName,tableName,DEFALUT_WIDTH);
     }
+    public String[] exportClassExcel(List<Object> list,String fileName,String sheetName,String tableName,int width)
+            throws NoExcelEntryAnnotationsException, AnnotationsColumReuseException, IOException {
+        if(tableName.equals(DEFALUT_TABLE_NAME)){
+            return exportClassExcel(list,fileName,sheetName,tableName,width,NO_TABLE_HEAD);
+        }else{
+            return exportClassExcel(list,fileName,sheetName,tableName,width,WITH_TABLE_HEAD);
+        }
 
-    public String[] exportClassExcel(List<Object> list,String fileName,String sheetName,String tableName,int width) throws NoExcelEntryAnnotationsException, AnnotationsColumReuseException, IOException {
+    }
+
+    public String[] exportClassExcel(List<Object> list,String fileName,String sheetName,String tableName,int width,int tableHeadRow)
+            throws NoExcelEntryAnnotationsException, AnnotationsColumReuseException, IOException {
         //通过反射获取注解信息
         int size = 0;
         List tiTleList = new ArrayList();
@@ -281,9 +308,9 @@ public class ExportExcelImp implements ExportExcel{
         }
 
         if(excelType==EXCEL_2003) {
-            return exportMapExcel(sheetName, tableName, tiTleList, mapper, contentList, fileName, width);
+            return exportMapExcel(sheetName, tableName, tiTleList, mapper, contentList, fileName, width,tableHeadRow);
         }else{
-            return exportTo2007(sheetName, tableName, tiTleList, mapper, contentList, fileName, width);
+            return exportTo2007(sheetName, tableName, tiTleList, mapper, contentList, fileName, width,tableHeadRow);
         }
     }
 

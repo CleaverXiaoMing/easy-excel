@@ -16,11 +16,14 @@ public interface ExportExcel {
     int MAX_ROW_NUM = 60000;
     short EXCEL_2003 = 3;
     short EXCEL_2007 = 7;
+    int WITH_TABLE_HEAD = 1;
+    int NO_TABLE_HEAD = 0;
 
-    public void setExcelType(short excelType);
+    void setExcelType(short excelType);
     String[] exportMapExcel(String sheetName, String tableHeadName, List<String> titleList, Map<String,String> titleMapper,
-                               List<Map<String,Object>> contentList, String fileName, int columWidth)
-            throws IOException ;
+                                   List<Map<String,Object>> contentList, String fileName, int columWidth,int tableHeadRow) throws IOException;
+    String[] exportTo2007(String sheetName, String tableHeadName, List<String> titleList, Map<String,String> titleMapper,
+                          List<Map<String,Object>> contentList, String fileName, int columWidth,int tableHeadRow) throws IOException;
     String[] exportMapExcel(List<Map<String,Object>> contentList,Class clazz)
             throws IOException, NoExcelEntryAnnotationsException, AnnotationsColumReuseException;
     String[] exportMapExcel(List<Map<String,Object>> contentList,Class clazz,String fileName)
@@ -30,15 +33,17 @@ public interface ExportExcel {
     String[] exportMapExcel(List<Map<String,Object>> contentList,Class clazz,String fileName,String sheetName,String tableName)
             throws IOException, NoExcelEntryAnnotationsException, AnnotationsColumReuseException;
     String[] exportMapExcel(List<Map<String,Object>> contentList,Class clazz,String fileName,String sheetName,String tableName,int width)
+            throws IOException, NoExcelEntryAnnotationsException, AnnotationsColumReuseException ;
+    String[] exportMapExcel(List<Map<String,Object>> contentList,Class clazz,String fileName,String sheetName,String tableName,int width,int tableHeadRow)
             throws IOException, NoExcelEntryAnnotationsException, AnnotationsColumReuseException;
     String[] exportClassExcel(List<Object> list)
             throws NoExcelEntryAnnotationsException, AnnotationsColumReuseException, IOException;
     String[] exportClassExcel(List<Object> list,String fileName)
-            throws IOException, NoExcelEntryAnnotationsException, AnnotationsColumReuseException;
+            throws NoExcelEntryAnnotationsException, AnnotationsColumReuseException, IOException;
     String[] exportClassExcel(List<Object> list,String fileName,String sheetName)
-            throws IOException, NoExcelEntryAnnotationsException, AnnotationsColumReuseException;
+            throws NoExcelEntryAnnotationsException, AnnotationsColumReuseException, IOException;
     String[] exportClassExcel(List<Object> list,String fileName,String sheetName,String tableName)
-            throws IOException, NoExcelEntryAnnotationsException, AnnotationsColumReuseException;
+            throws NoExcelEntryAnnotationsException, AnnotationsColumReuseException, IOException;
     String[] exportClassExcel(List<Object> list,String fileName,String sheetName,String tableName,int width)
-            throws IOException, NoExcelEntryAnnotationsException, AnnotationsColumReuseException;
+            throws NoExcelEntryAnnotationsException, AnnotationsColumReuseException, IOException;
 }

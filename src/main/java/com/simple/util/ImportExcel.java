@@ -10,7 +10,8 @@ import java.util.Map;
 
 public interface ImportExcel {
     //默认从第三行开始导入
-    int BEGIN_ROW_NUM = 2;
+    int BEGIN_ROW_NUM = 1;
+    int BEGIN_ROW_NUM_WITH_HEAD = 2;
 
     List<Object> toList(Class clazz,String fileName,int beginRowNum) throws IOException, IllegalAccessException, InstantiationException, InvocationTargetException;
 

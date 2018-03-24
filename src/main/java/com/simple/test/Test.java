@@ -54,7 +54,7 @@ public class Test {
             ImportExcel importExcel = new ImportExcelImp();
 
             //输入文件所在位置和起始行号开始导入
-            List<Object> stuLis =  importExcel.toList(Student.class,"E:\\wokkspaceidea\\easy-excel\\stu.xlsx",ImportExcel.BEGIN_ROW_NUM);
+            List<Object> stuLis =  importExcel.toList(Student.class,"E:/workspaceidea/easy-excel/stu.xlsx",ImportExcel.BEGIN_ROW_NUM);
             for(Object obj:stuLis){
                 if(obj instanceof Student){
                     Student stu = (Student) obj;
